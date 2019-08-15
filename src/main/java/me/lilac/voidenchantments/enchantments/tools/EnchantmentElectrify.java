@@ -5,7 +5,9 @@ import me.lilac.voidenchantments.utils.Rarity;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
@@ -28,21 +30,22 @@ public class EnchantmentElectrify extends AbstractMiscEnchantment  {
     }
 
     @Override
-    public void onFish(Player player, int level, ItemStack item) {
-        ItemStack cooked;
-        if (item.getType() == Material.COD) cooked = new ItemStack(Material.COOKED_COD);
-        if (item.getType() == Material.SALMON) cooked = new ItemStack(Material.COOKED_SALMON);
-
+    public void onFish(Player player, int level, PlayerFishEvent event) {
+        Item caught = (Item) event.getCaught();
+        ItemStack item = caught.getItemStack();
+        if (item.getType() == Material.COD) item.setType(Material.COOKED_COD);
+        if (item.getType() == Material.SALMON) item.setType(Material.COOKED_SALMON);
+        event.getCaught().getWorld().strikeLightningEffect(event.getCaught().getLocation());
     }
 
     @Override
     public int getMaxLevel() {
-        return 0;
+        return 1;
     }
 
     @Override
     public EnchantmentTarget getItemTarget() {
-        return null;
+        return EnchantmentTarget.TOOL;
     }
 
     @Override
@@ -52,11 +55,11 @@ public class EnchantmentElectrify extends AbstractMiscEnchantment  {
 
     @Override
     public boolean canEnchantItem(ItemStack itemStack) {
-        return false;
+        return itemStack.getType() == Material.FISHING_ROD;
     }
 
     @Override
     public Rarity getRarity() {
-        return null;
+        return Rarity.COMMON;
     }
 }
